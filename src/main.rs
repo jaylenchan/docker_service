@@ -1,8 +1,8 @@
 use anyhow::Result;
-use docker_service::{docker_compose::dockercompose, docker_file::dockerfile};
+use docker_service::{docker_compose::gen_dockercompose, docker_file::gen_dockerfile};
 fn main() -> Result<()> {
-    dockerfile()?;
-    dockercompose()?;
+    gen_dockerfile()?;
+    gen_dockercompose()?;
 
     Ok(())
 }

@@ -1,7 +1,20 @@
+mod jenkins;
+mod nginx;
+mod npm;
+
 use anyhow::Result;
 use docker_compose_types::{Compose, Service, Services};
 use indexmap::IndexMap;
-pub fn dockercompose() -> Result<()> {
+
+
+#[derive(Debug)]
+pub enum DockerService {
+    Jenkins,
+    Nginx,
+    Npm,
+}
+
+pub fn gen_dockercompose() -> Result<()> {
     let compose_content = Compose {
         version: Some("3.8".to_string()),
         services: {
