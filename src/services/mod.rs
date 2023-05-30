@@ -6,12 +6,6 @@ pub use jenkins::Jenkins;
 pub use nginx::Nginx;
 pub use npm::Npm;
 
-pub enum Service {
-    Nginx(Nginx),
-    Jenkins(Jenkins),
-    Npm(Npm),
-}
-
 #[derive(Debug, Clone)]
 pub struct Dockerservice {
     service_name: String,
@@ -22,6 +16,12 @@ pub struct Dockerservice {
 pub struct Dockerfile {
     pub content: String,
     pub filename: String,
+}
+
+pub enum Service {
+    Nginx(Nginx),
+    Jenkins(Jenkins),
+    Npm(Npm),
 }
 
 impl Service {
