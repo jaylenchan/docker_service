@@ -10,7 +10,7 @@ use std::path::Path;
 
 pub fn gen_dockerfile(services: &Vec<services::Service>) -> Result<()> {
     services.into_iter().for_each(|service| {
-        let dockefile = &service.get_dockerfile();
+        let dockefile = &service.get_docker_file();
         if let Err(_) = write_to_dir("services", &dockefile.filename, dockefile.content.clone()) {
             let mut path = String::new();
             path.push_str("services");

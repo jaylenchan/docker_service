@@ -2,9 +2,9 @@ mod jenkins;
 mod nginx;
 mod npm;
 
-use jenkins::Jenkins;
-use nginx::Nginx;
-use npm::Npm;
+pub use jenkins::Jenkins;
+pub use nginx::Nginx;
+pub use npm::Npm;
 
 pub enum Service {
     Nginx(Nginx),
@@ -12,19 +12,10 @@ pub enum Service {
     Npm(Npm),
 }
 
-impl Service {
-    pub fn get_dockerfile(&self) -> Dockerfile {
-        match self {
-            Service::Nginx(nginx) => nginx.dockerfile.clone(),
-            Service::Jenkins(jenkins) => jenkins.dockerfile.clone(),
-            Service::Npm(npm) => npm.dockerfile.clone(),
-        }
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct Dockerservice {
     service_name: String,
+    image: String,
 }
 
 #[derive(Debug, Clone)]
@@ -33,10 +24,20 @@ pub struct Dockerfile {
     pub filename: String,
 }
 
-pub fn get_services() -> Vec<Service> {
-    vec![
-        Service::Nginx(Nginx::new()),
-        Service::Jenkins(Jenkins::new()),
-        Service::Npm(Npm::new()),
-    ]
+impl Service {
+    pub fn get_docker_file(&self) -> Dockerfile {
+        match self {
+            Service::Nginx(nginx) => nginx.docker_file.clone(),
+            Service::Jenkins(jenkins) => jenkins.docker_file.clone(),
+            Service::Npm(npm) => npm.docker_file.clone(),
+        }
+    }
+
+    pub fn get_docker_service(&self) -> Dockerservice {
+        match self {
+            Service::Nginx(nginx) => nginx.docker_service.clone(),
+            Service::Jenkins(jenkins) => jenkins.docker_service.clone(),
+            Service::Npm(npm) => npm.docker_service.clone(),
+        }
+    }
 }

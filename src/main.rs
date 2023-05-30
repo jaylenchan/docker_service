@@ -1,5 +1,8 @@
 use anyhow::Result;
-use docker_service::{gen_dockercompose, gen_dockerfile, services::get_services};
+use docker_service::{
+    gen_dockercompose, gen_dockerfile,
+    services::{Jenkins, Nginx, Npm, Service},
+};
 
 fn main() {
     if let Ok(_) = gen_files() {
@@ -8,7 +11,12 @@ fn main() {
 }
 
 fn gen_files() -> Result<()> {
-    let docker_services = get_services();
+    let docker_services = vec![
+        Service::Nginx(Nginx::new()),
+        Service::Jenkins(Jenkins::new()),
+        Service::Npm(Npm::new()),
+    ];
+
     gen_dockerfile(&docker_services)?;
     gen_dockercompose(&docker_services)?;
 

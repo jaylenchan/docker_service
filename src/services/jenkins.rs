@@ -1,15 +1,15 @@
 // use crate::Service;
-use dockerfile::{Copy, Env, Expose, Label, Run, User};
 use crate::services::{Dockerfile, Dockerservice};
+use dockerfile::{Copy, Env, Expose, Label, Run, User};
 pub struct Jenkins {
-    pub dockerfile: Dockerfile,
-    pub service: Dockerservice,
+    pub docker_file: Dockerfile,
+    pub docker_service: Dockerservice,
 }
 
 impl Jenkins {
     pub fn new() -> Self {
         Jenkins {
-            dockerfile: Dockerfile {
+            docker_file: Dockerfile {
                 content:  dockerfile::Dockerfile::base("jenkins/jenkins:lts-jdk11")
                 .push(Label::new("maintainer JaylenChan <jaylen.work@hotmail.com>"))
                 .push(User::new("root"))
@@ -27,8 +27,9 @@ impl Jenkins {
                 .to_string(),
                 filename: "jenkins.Dockerfile".to_string(),
             },
-            service: Dockerservice {
+            docker_service: Dockerservice {
                 service_name: "jenkins".to_string(),
+                image: "jenkins".to_string()
             },
         }
     }
