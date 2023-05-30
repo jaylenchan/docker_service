@@ -1,8 +1,7 @@
 use anyhow::Result;
 use dockerfile::{Copy, Dockerfile, Env, Expose, Label, Run, User};
-use std::{fs::File, io::Write};
 
-pub fn jenkins_dockerfile() -> Result<()> {
+pub fn jenkins_dockerfile() -> Result<(String, String)> {
     let dockerfile =  Dockerfile::base("jenkins/jenkins:lts-jdk11")
     .push(Label::new("maintainer JaylenChan <jaylen.work@hotmail.com>"))
     .push(User::new("root"))
@@ -16,11 +15,10 @@ pub fn jenkins_dockerfile() -> Result<()> {
     .push(Env::new("mkdir ${CASC_JENKINS_CONFIG}"))
     .push(Copy::new("jenkins.yaml ${CASC_JENKINS_CONFIG}/jenkins.yaml"))
     .push(Expose::new("8080"))
-    .finish();
+    .finish()
+    .to_string();
 
-    let mut file = File::create("jenkins.Dockerfile")?;
+    let filename = "jenkins.Dockerfile".to_string();
 
-    write!(&mut file, "{}", dockerfile.to_string())?;
-
-    Ok(())
+    Ok((dockerfile, filename))
 }

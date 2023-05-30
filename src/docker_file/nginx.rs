@@ -1,8 +1,7 @@
 use anyhow::Result;
 use dockerfile::{Cmd, Dockerfile, Expose, Label, Run};
-use std::{fs::File, io::Write};
 
-pub fn nginx_dockerfile() -> Result<()> {
+pub fn nginx_dockerfile() -> Result<(String, String)> {
     let dockerfile = Dockerfile::base("debian:bullseye-slim")
         .push(Label::new(
             "maintainer JaylenChan <jaylen.work@hotmail.com>",
@@ -22,11 +21,10 @@ pub fn nginx_dockerfile() -> Result<()> {
         ))
         .push(Expose::new("80 443"))
         .push(Cmd::new(r#"["nginx", "-g", "daemon off;"]"#))
-        .finish();
+        .finish()
+        .to_string();
 
-    let mut file = File::create("nginx.Dockerfile")?;
+    let filename = "nginx.Dockerfile".to_string();
 
-    write!(&mut file, "{}", dockerfile.to_string())?;
-
-    Ok(())
+    Ok((dockerfile, filename))
 }
