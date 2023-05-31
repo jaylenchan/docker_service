@@ -9,6 +9,9 @@ use os_info::{get as get_os_info, Type};
 
 fn main() -> Result<()> {
     let store_path = set_store_path("services")?;
+
+    println!("the services store path is: {}", store_path);
+
     if let Ok(_) = gen_files(&store_path) {
         if let Err(err) = run_services(&store_path) {
             println!("run service err: {}", err);
@@ -37,14 +40,20 @@ fn set_store_path(root_folder: &str) -> Result<String> {
     let info = get_os_info();
 
     match info.os_type() {
-        Type::Macos | Type::Ubuntu => {
-            let mut store_path = duct_sh::sh_dangerous(format!("echo {} ", "$HOME")).read()?;
+        Type::Macos | Type::Ubuntu => match dirs::home_dir() {
+            Some(path_buf) => {
+                let store_path = path_buf
+                    .join(root_folder)
+                    .into_os_string()
+                    .into_string()
+                    .unwrap();
 
-            store_path.push_str("/");
-            store_path.push_str(root_folder);
-
-            Ok(store_path)
-        }
+                Ok(store_path)
+            }
+            None => {
+                panic!("can't set store path!")
+            }
+        },
         _ => unreachable!(),
     }
 }
