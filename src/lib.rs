@@ -37,9 +37,9 @@ pub fn gen_dockercompose(services: &Vec<Service>) -> Result<()> {
         networks: {
             let mut map = IndexMap::new();
             map.insert(
-                "fe-services".to_string(),
+                "fe_service".to_string(),
                 MapOrEmpty::Map(NetworkSettings {
-                    name: Some("fe-services".into()),
+                    name: Some("fe_service".into()),
                     driver: Some("bridge".into()),
                     ..Default::default()
                 }),

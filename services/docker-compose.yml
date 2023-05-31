@@ -33,6 +33,6 @@ services:
     networks:
     - fe_service
 networks:
-  fe-services:
+  fe_service:
     driver: bridge
-    name: fe-services
+    name: fe_service
