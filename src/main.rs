@@ -8,11 +8,12 @@ use docker_service::{
 use os_info::{get as get_os_info, Type};
 
 fn main() -> Result<()> {
-    let config_path = set_config_path("services")?;
-    if let Ok(_) = gen_files(&config_path) {
-        if let Err(err) = run_services(&config_path) {
+    let store_path = set_store_path("services")?;
+    if let Ok(_) = gen_files(&store_path) {
+        if let Err(err) = run_services(&store_path) {
             println!("run service err: {}", err);
-            stop_services(&config_path)?;
+
+            stop_services(&store_path)?;
         }
     }
 
@@ -32,51 +33,52 @@ fn gen_files(store_path: &str) -> Result<()> {
     Ok(())
 }
 
-fn set_config_path(root_folder: &str) -> Result<String> {
+fn set_store_path(root_folder: &str) -> Result<String> {
     let info = get_os_info();
 
     match info.os_type() {
         Type::Macos | Type::Ubuntu => {
-            let mut config_path = duct_sh::sh_dangerous(format!("echo {} ", "$HOME")).read()?;
+            let mut store_path = duct_sh::sh_dangerous(format!("echo {} ", "$HOME")).read()?;
 
-            config_path.push_str("/");
-            config_path.push_str(root_folder);
+            store_path.push_str("/");
+            store_path.push_str(root_folder);
 
-            Ok(config_path)
+            Ok(store_path)
         }
         _ => unreachable!(),
     }
 }
 
 #[allow(dead_code)]
-fn run_services(config_path: &str) -> Result<()> {
-    docker_compose_up(config_path)?;
+fn run_services(store_path: &str) -> Result<()> {
+    docker_compose_up(store_path)?;
     Ok(())
 }
 
 #[allow(dead_code)]
-fn stop_services(config_path: &str) -> Result<()> {
-    docker_compose_down(config_path)?;
+fn stop_services(store_path: &str) -> Result<()> {
+    docker_compose_down(store_path)?;
     force_remove_all_container()?;
 
     Ok(())
 }
 
 #[allow(dead_code)]
-fn docker_compose_up(config_path: &str) -> Result<()> {
+fn docker_compose_up(store_path: &str) -> Result<()> {
     duct_sh::sh_dangerous(format!(
         "docker-compose -f {}/docker-compose.yml up -d",
-        config_path
+        store_path
     ))
     .read()?;
 
     Ok(())
 }
 
-fn docker_compose_down(config_path: &str) -> Result<()> {
+#[allow(dead_code)]
+fn docker_compose_down(store_path: &str) -> Result<()> {
     duct_sh::sh_dangerous(format!(
         "docker-compose -f {}/docker-compose.yml down -d",
-        config_path
+        store_path
     ))
     .read()?;
     Ok(())
