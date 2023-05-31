@@ -2,20 +2,30 @@ mod jenkins;
 mod nginx;
 mod npm;
 
+pub mod docker {
+    pub use super::Dockerfile;
+    pub use super::Dockerservice;
+    pub use docker_compose_types::Service as DockerserviceContent;
+    pub use docker_compose_types::*;
+    pub use dockerfile::Dockerfile as DockerfileContent;
+    pub use dockerfile::{Add, Arg, Cmd, Copy, Env, Expose, From, Label, Run, User};
+}
+
 pub use jenkins::Jenkins;
 pub use nginx::Nginx;
 pub use npm::Npm;
 
-#[derive(Debug, Clone)]
-pub struct Dockerservice {
-    service_name: String,
-    image: String,
+use docker::DockerserviceContent;
+#[derive(Clone)]
+pub struct Dockerfile {
+    pub file_name: String,
+    pub content: String,
 }
 
-#[derive(Debug, Clone)]
-pub struct Dockerfile {
-    pub content: String,
-    pub filename: String,
+#[derive(Clone)]
+pub struct Dockerservice {
+    pub service_name: String,
+    pub content: DockerserviceContent,
 }
 
 pub enum Service {

@@ -1,20 +1,21 @@
 pub mod services;
 
 use anyhow::Result;
-use docker_compose_types::{Compose, Service, Services};
 use fs_extra::dir::create_all;
 use indexmap::IndexMap;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
-pub fn gen_dockerfile(services: &Vec<services::Service>) -> Result<()> {
+use services::{docker::*, Service};
+
+pub fn gen_dockerfile(services: &Vec<Service>) -> Result<()> {
     services.into_iter().for_each(|service| {
         let dockefile = &service.get_docker_file();
-        if let Err(_) = write_to_dir("services", &dockefile.filename, dockefile.content.clone()) {
+        if let Err(_) = write_to_dir("services", &dockefile.file_name, dockefile.content.clone()) {
             let mut path = String::new();
             path.push_str("services");
-            path.push_str(&dockefile.filename);
+            path.push_str(&dockefile.file_name);
             panic!("write_to_dir failed: {}", path);
         };
     });
@@ -22,21 +23,28 @@ pub fn gen_dockerfile(services: &Vec<services::Service>) -> Result<()> {
     Ok(())
 }
 
-pub fn gen_dockercompose(services: &Vec<services::Service>) -> Result<()> {
-    let mut services = IndexMap::new();
+pub fn gen_dockercompose(services: &Vec<Service>) -> Result<()> {
+    let mut docker_services = IndexMap::new();
+    services.into_iter().for_each(|service| {
+        let docker_service = service.get_docker_service();
 
-    let service = (
-        "web".to_string(),
-        Some(Service {
-            image: Some("nginx:latest".to_string()),
-            ..Default::default()
-        }),
-    );
-    services.insert(service.0, service.1);
+        docker_services.insert(docker_service.service_name, Some(docker_service.content));
+    });
 
     let serialized = serde_yaml::to_string(&Compose {
         version: Some("3.8".to_string()),
-        services: { Services(services) },
+        services: { Services(docker_services) },
+        networks: {
+            let mut map = IndexMap::new();
+            map.insert(
+                "fe-services".to_string(),
+                MapOrEmpty::Map(NetworkSettings {
+                    driver: Some("bridge".into()),
+                    ..Default::default()
+                }),
+            );
+            ComposeNetworks(map)
+        },
         ..Default::default()
     })?;
 

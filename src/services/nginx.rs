@@ -1,6 +1,8 @@
-use dockerfile::{Cmd, Expose, Label, Run};
+use super::docker::{
+    AdvancedBuildStep, BuildStep, Cmd, Dockerfile, DockerfileContent, Dockerservice,
+    DockerserviceContent, Expose, Label, Networks, Ports, Run,
+};
 
-use crate::services::{Dockerfile, Dockerservice};
 pub struct Nginx {
     pub docker_file: Dockerfile,
     pub docker_service: Dockerservice,
@@ -10,7 +12,8 @@ impl Nginx {
     pub fn new() -> Self {
         Nginx {
             docker_file: Dockerfile {
-                content: dockerfile::Dockerfile::base("debian:bullseye-slim")
+                file_name: "nginx.Dockerfile".to_string(),
+                content: DockerfileContent::base("debian:bullseye-slim")
                     .push(Label::new(
                         "maintainer JaylenChan <jaylen.work@hotmail.com>",
                     ))
@@ -31,11 +34,20 @@ impl Nginx {
                     .push(Cmd::new(r#"["nginx", "-g", "daemon off;"]"#))
                     .finish()
                     .to_string(),
-                filename: "nginx.Dockerfile".to_string(),
             },
             docker_service: Dockerservice {
-                service_name: "npm".to_string(),
-                image: "nginx".to_string(),
+                service_name: "nginx".into(),
+                content: DockerserviceContent {
+                    build_: Some(BuildStep::Advanced(AdvancedBuildStep {
+                        context: ".".into(),
+                        dockerfile: Some("nginx.Dockerfile".into()),
+                        ..Default::default()
+                    })),
+                    ports: Ports::Short(vec!["80:80".into()]),
+                    networks: Networks::Simple(vec!["fe-services".into()]),
+                    restart: Some("always".into()),
+                    ..Default::default()
+                },
             },
         }
     }

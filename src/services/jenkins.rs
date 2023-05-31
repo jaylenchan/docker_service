@@ -1,6 +1,8 @@
-// use crate::Service;
-use crate::services::{Dockerfile, Dockerservice};
-use dockerfile::{Copy, Env, Expose, Label, Run, User};
+use super::docker::{
+    AdvancedBuildStep, BuildStep, Copy, Dockerfile, DockerfileContent, Dockerservice,
+    DockerserviceContent, Env, Expose, Label, Networks, Ports, Run, User,
+};
+
 pub struct Jenkins {
     pub docker_file: Dockerfile,
     pub docker_service: Dockerservice,
@@ -10,7 +12,8 @@ impl Jenkins {
     pub fn new() -> Self {
         Jenkins {
             docker_file: Dockerfile {
-                content:  dockerfile::Dockerfile::base("jenkins/jenkins:lts-jdk11")
+                file_name: "jenkins.Dockerfile".to_string(),
+                content:  DockerfileContent::base("jenkins/jenkins:lts-jdk11")
                 .push(Label::new("maintainer JaylenChan <jaylen.work@hotmail.com>"))
                 .push(User::new("root"))
                 .push(Run::new("ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone"))
@@ -25,11 +28,20 @@ impl Jenkins {
                 .push(Expose::new("8080"))
                 .finish()
                 .to_string(),
-                filename: "jenkins.Dockerfile".to_string(),
             },
             docker_service: Dockerservice {
-                service_name: "jenkins".to_string(),
-                image: "jenkins".to_string()
+                service_name: "jenkins".into(),
+                content: DockerserviceContent {
+                    build_: Some(BuildStep::Advanced(AdvancedBuildStep {
+                        context: ".".into(),
+                        dockerfile: Some("jenkins.Dockerfile".into()),
+                        ..Default::default()
+                    })),
+                    ports: Ports::Short(vec!["8080:8080".into()]),
+                    networks: Networks::Simple(vec!["fe-services".into()]),
+                    restart: Some("always".into()),
+                    ..Default::default()
+                }
             },
         }
     }

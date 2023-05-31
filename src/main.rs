@@ -1,7 +1,9 @@
 use anyhow::Result;
 use docker_service::{
     gen_dockercompose, gen_dockerfile,
-    services::{Jenkins, Nginx, Npm, Service},
+    services::{
+        Service, {Jenkins, Nginx, Npm},
+    },
 };
 
 fn main() {
