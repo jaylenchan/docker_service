@@ -6,6 +6,7 @@ use super::docker::{
 pub struct Jenkins {
     pub docker_file: Dockerfile,
     pub docker_service: Dockerservice,
+    pub config_folders: Option<Vec<String>>,
 }
 
 impl Jenkins {
@@ -45,6 +46,7 @@ impl Jenkins {
                     ..Default::default()
                 }
             },
+            config_folders: None,
         }
     }
 }

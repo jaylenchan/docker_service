@@ -1,10 +1,14 @@
 use anyhow::Result;
-use docker_service::{ensure_services_dir, gen_files, get_services, set_store_path};
+use docker_service::{
+    ensure_services_dir, gen_files, get_services, set_services_config_folder, set_store_path,
+};
 
 fn main() -> Result<()> {
     let store_path = set_store_path("services")?;
 
-    ensure_services_dir(&get_services(), &store_path)?;
+    let services_store_info = ensure_services_dir(&get_services(), &store_path)?;
+
+    set_services_config_folder(&get_services(), &services_store_info)?;
 
     println!("the services store path is: {}", store_path);
 

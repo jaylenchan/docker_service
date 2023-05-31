@@ -22,7 +22,7 @@ pub struct Dockerfile {
     pub content: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Dockerservice {
     pub service_name: String,
     pub content: DockerserviceContent,
@@ -48,6 +48,14 @@ impl Service {
             Service::Nginx(nginx) => nginx.docker_service.clone(),
             Service::Jenkins(jenkins) => jenkins.docker_service.clone(),
             Service::Npm(npm) => npm.docker_service.clone(),
+        }
+    }
+
+    pub fn get_config_folder(&self) -> Vec<String> {
+        match self {
+            Service::Nginx(nginx) => nginx.config_folders.clone().unwrap(),
+            Service::Jenkins(jenkins) => jenkins.config_folders.clone().unwrap(),
+            Service::Npm(npm) => npm.config_folders.clone().unwrap(),
         }
     }
 }

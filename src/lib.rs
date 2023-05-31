@@ -122,15 +122,53 @@ pub fn write_to_dir(dir: &str, filename: &str, content: String) -> Result<()> {
     Ok(())
 }
 
-pub fn ensure_services_dir(services: &Vec<Service>, store_path: &str) -> Result<()> {
-    services.into_iter().for_each(|service| {
-        let service = service.get_docker_service();
-        let config_path = Path::new(store_path).join(service.service_name.as_str());
+pub fn ensure_services_dir(
+    services: &Vec<Service>,
+    store_path: &str,
+) -> Result<Vec<(String, String)>> {
+    let services = services
+        .into_iter()
+        .map(|service| {
+            let service = service.get_docker_service();
+            let config_path = Path::new(store_path).join(service.service_name.as_str());
 
-        if !config_path.exists() {
-            create_all(&config_path, true).unwrap();
-            println!("config_path => {:?}", config_path);
-        }
-    });
+            if !config_path.exists() {
+                create_all(&config_path, true).unwrap();
+                println!("config_path => {:?}", config_path);
+            }
+
+            (
+                service.service_name,
+                config_path.into_os_string().into_string().unwrap(),
+            )
+        })
+        .collect::<Vec<(String, String)>>();
+
+    Ok(services)
+}
+
+pub fn set_services_config_folder(
+    services: &Vec<Service>,
+    store_info: &Vec<(String, String)>,
+) -> Result<()> {
+    store_info
+        .into_iter()
+        .for_each(|(service_name, store_path)| {
+            services.into_iter().find(|s| {
+                let service = s.get_docker_service();
+                let config_folders = s.get_config_folder();
+
+                if service.service_name.as_str() == service_name {
+                    config_folders.into_iter().for_each(|config_folder| {
+                        let path_buf = Path::new(store_path).join(&config_folder);
+
+                        create_all(&path_buf, true).unwrap();
+                    })
+                }
+
+                true
+            });
+        });
+
     Ok(())
 }

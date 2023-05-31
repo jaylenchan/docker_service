@@ -6,6 +6,7 @@ use super::docker::{
 pub struct Nginx {
     pub docker_file: Dockerfile,
     pub docker_service: Dockerservice,
+    pub config_folders: Option<Vec<String>>,
 }
 
 impl Nginx {
@@ -51,6 +52,7 @@ impl Nginx {
                     ..Default::default()
                 },
             },
+            config_folders: Some(vec!["conf".into()]),
         }
     }
 }

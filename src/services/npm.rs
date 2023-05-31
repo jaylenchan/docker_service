@@ -7,6 +7,7 @@ use indexmap::IndexMap;
 pub struct Npm {
     pub docker_file: Dockerfile,
     pub docker_service: Dockerservice,
+    pub config_folders: Option<Vec<String>>,
 }
 
 impl Npm {
@@ -40,6 +41,7 @@ impl Npm {
                     ..Default::default()
                 },
             },
+            config_folders: None,
         }
     }
 }
