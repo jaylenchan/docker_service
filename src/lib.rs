@@ -4,7 +4,7 @@ use anyhow::Result;
 use fs_extra::dir::create_all;
 use indexmap::IndexMap;
 use os_info::{get as get_os_info, Type};
-use services::{docker::*, Jenkins, Nginx, Service};
+use services::{docker::*, ElectronBuilder, Jenkins, Nginx, Service};
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -20,9 +20,10 @@ pub fn gen_files(store_path: &str) -> Result<()> {
 
 pub fn get_services() -> Vec<Service> {
     vec![
-        Service::Nginx(Nginx::new()),
-        Service::Jenkins(Jenkins::new()),
+        // Service::Nginx(Nginx::new()),
+        // Service::Jenkins(Jenkins::new()),
         // Service::Npm(Npm::new()),
+        Service::ElectronBuilder(ElectronBuilder::new()),
     ]
 }
 

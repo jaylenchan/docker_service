@@ -15,7 +15,6 @@ fn main() -> Result<()> {
     if let Ok(_) = gen_files(&store_path) {
         if let Err(err) = run_services(&store_path) {
             println!("run service err: {}", err);
-
             stop_services(&store_path)?;
         }
     }
@@ -33,6 +32,7 @@ fn run_services(store_path: &str) -> Result<()> {
 fn stop_services(store_path: &str) -> Result<()> {
     docker_compose_down(store_path)?;
     force_remove_all_container()?;
+    force_remove_all_images()?;
 
     Ok(())
 }
