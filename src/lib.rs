@@ -9,21 +9,27 @@ use std::path::Path;
 
 use services::{docker::*, Service};
 
-pub fn gen_dockerfile(services: &Vec<Service>) -> Result<()> {
+pub fn gen_dockerfile(services: &Vec<Service>, store_path: &str) -> Result<()> {
     services.into_iter().for_each(|service| {
-        let dockefile = &service.get_docker_file();
-        if let Err(_) = write_to_dir("services", &dockefile.file_name, dockefile.content.clone()) {
-            let mut path = String::new();
-            path.push_str("services");
-            path.push_str(&dockefile.file_name);
-            panic!("write_to_dir failed: {}", path);
+        let dockerfile = &service.get_docker_file();
+        if let Err(_) = write_to_dir(
+            store_path,
+            &dockerfile.file_name,
+            dockerfile.content.clone(),
+        ) {
+            panic!(
+                "write_to_dir failed: {}",
+                Path::new(store_path)
+                    .join(&dockerfile.file_name)
+                    .to_string_lossy()
+            );
         };
     });
 
     Ok(())
 }
 
-pub fn gen_dockercompose(services: &Vec<Service>) -> Result<()> {
+pub fn gen_dockercompose(services: &Vec<Service>, store_path: &str) -> Result<()> {
     let mut docker_services = IndexMap::new();
     services.into_iter().for_each(|service| {
         let docker_service = service.get_docker_service();
@@ -49,7 +55,7 @@ pub fn gen_dockercompose(services: &Vec<Service>) -> Result<()> {
         ..Default::default()
     })?;
 
-    write_to_dir("services", "docker-compose.yml", serialized)?;
+    write_to_dir(store_path, "docker-compose.yml", serialized)?;
 
     Ok(())
 }
