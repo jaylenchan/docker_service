@@ -10,16 +10,20 @@ use std::io::Write;
 use std::path::Path;
 
 pub fn gen_files(store_path: &str) -> Result<()> {
-    let docker_services = vec![
-        Service::Nginx(Nginx::new()),
-        Service::Jenkins(Jenkins::new()),
-        // Service::Npm(Npm::new()),
-    ];
+    let docker_services = get_services();
 
     gen_dockerfile(&docker_services, store_path)?;
     gen_dockercompose(&docker_services, store_path)?;
 
     Ok(())
+}
+
+pub fn get_services() -> Vec<Service> {
+    vec![
+        Service::Nginx(Nginx::new()),
+        Service::Jenkins(Jenkins::new()),
+        // Service::Npm(Npm::new()),
+    ]
 }
 
 pub fn set_store_path(root_folder: &str) -> Result<String> {
@@ -115,5 +119,18 @@ pub fn write_to_dir(dir: &str, filename: &str, content: String) -> Result<()> {
         }
     }
 
+    Ok(())
+}
+
+pub fn ensure_services_dir(services: &Vec<Service>, store_path: &str) -> Result<()> {
+    services.into_iter().for_each(|service| {
+        let service = service.get_docker_service();
+        let config_path = Path::new(store_path).join(service.service_name.as_str());
+
+        if !config_path.exists() {
+            create_all(&config_path, true).unwrap();
+            println!("config_path => {:?}", config_path);
+        }
+    });
     Ok(())
 }
