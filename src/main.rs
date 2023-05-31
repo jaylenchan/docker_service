@@ -1,11 +1,5 @@
 use anyhow::Result;
-use docker_service::{
-    gen_dockercompose, gen_dockerfile,
-    services::{
-        Service, {Jenkins, Nginx},
-    },
-};
-use os_info::{get as get_os_info, Type};
+use docker_service::{gen_files, set_store_path};
 
 fn main() -> Result<()> {
     let store_path = set_store_path("services")?;
@@ -21,41 +15,6 @@ fn main() -> Result<()> {
     }
 
     Ok(())
-}
-
-fn gen_files(store_path: &str) -> Result<()> {
-    let docker_services = vec![
-        Service::Nginx(Nginx::new()),
-        Service::Jenkins(Jenkins::new()),
-        // Service::Npm(Npm::new()),
-    ];
-
-    gen_dockerfile(&docker_services, store_path)?;
-    gen_dockercompose(&docker_services, store_path)?;
-
-    Ok(())
-}
-
-fn set_store_path(root_folder: &str) -> Result<String> {
-    let info = get_os_info();
-
-    match info.os_type() {
-        Type::Macos | Type::Ubuntu => match dirs::home_dir() {
-            Some(path_buf) => {
-                let store_path = path_buf
-                    .join(root_folder)
-                    .into_os_string()
-                    .into_string()
-                    .unwrap();
-
-                Ok(store_path)
-            }
-            None => {
-                panic!("can't set store path!")
-            }
-        },
-        _ => unreachable!(),
-    }
 }
 
 #[allow(dead_code)]
