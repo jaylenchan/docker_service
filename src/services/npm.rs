@@ -35,7 +35,7 @@ impl Npm {
                     ]),
                     restart: Some("always".into()),
                     environment: Environment::KvPair(IndexMap::new()),
-                    networks: Networks::Simple(vec!["fe-services".into()]),
+                    networks: Networks::Simple(vec!["fe_service".into()]),
                     ..Default::default()
                 },
             },

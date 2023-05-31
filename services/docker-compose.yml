@@ -8,7 +8,7 @@ services:
     - 80:80
     restart: always
     networks:
-    - fe-services
+    - fe_service
   jenkins:
     build:
       context: .
@@ -17,7 +17,7 @@ services:
     - 8080:8080
     restart: always
     networks:
-    - fe-services
+    - fe_service
   npm:
     container_name: npm
     build:
@@ -31,7 +31,8 @@ services:
     - /home/fe_service/conf:/verdaccio/conf
     - /home/fe_service/plugins:/verdaccio/plugins
     networks:
-    - fe-services
+    - fe_service
 networks:
   fe-services:
     driver: bridge
+    name: fe-services

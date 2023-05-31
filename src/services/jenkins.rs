@@ -38,7 +38,7 @@ impl Jenkins {
                         ..Default::default()
                     })),
                     ports: Ports::Short(vec!["8080:8080".into()]),
-                    networks: Networks::Simple(vec!["fe-services".into()]),
+                    networks: Networks::Simple(vec!["fe_service".into()]),
                     restart: Some("always".into()),
                     ..Default::default()
                 }

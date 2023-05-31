@@ -44,7 +44,7 @@ impl Nginx {
                         ..Default::default()
                     })),
                     ports: Ports::Short(vec!["80:80".into()]),
-                    networks: Networks::Simple(vec!["fe-services".into()]),
+                    networks: Networks::Simple(vec!["fe_service".into()]),
                     restart: Some("always".into()),
                     ..Default::default()
                 },

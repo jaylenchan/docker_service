@@ -5,11 +5,13 @@ use docker_service::{
         Service, {Jenkins, Nginx, Npm},
     },
 };
+use duct::cmd;
 
-fn main() {
-    if let Ok(_) = gen_files() {
-        run_services();
-    }
+fn main() -> Result<()> {
+    gen_files()?;
+    run_services()?;
+
+    Ok(())
 }
 
 fn gen_files() -> Result<()> {
@@ -25,6 +27,10 @@ fn gen_files() -> Result<()> {
     Ok(())
 }
 
-fn run_services() {
-    println!("run services!");
+fn run_services() -> Result<()> {
+    cmd!("ls").run()?;
+    cmd!("cd", "services").run()?;
+    cmd!("docker-compose", "up").run()?;
+
+    Ok(())
 }
