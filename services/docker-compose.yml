@@ -1,6 +1,8 @@
 version: '3.8'
 services:
   nginx:
+    image: nginx:wizard
+    container_name: nginx
     build:
       context: .
       dockerfile: nginx.Dockerfile
@@ -10,26 +12,14 @@ services:
     networks:
     - fe_service
   jenkins:
+    image: jenkins:wizard
+    container_name: jenkins
     build:
       context: .
       dockerfile: jenkins.Dockerfile
     ports:
     - 8080:8080
     restart: always
-    networks:
-    - fe_service
-  npm:
-    container_name: npm
-    build:
-      context: .
-      dockerfile: npm.Dockerfile
-    ports:
-    - 4873:4873
-    restart: always
-    volumes:
-    - /home/fe_service/storage:/verdaccio/storage
-    - /home/fe_service/conf:/verdaccio/conf
-    - /home/fe_service/plugins:/verdaccio/plugins
     networks:
     - fe_service
 networks:

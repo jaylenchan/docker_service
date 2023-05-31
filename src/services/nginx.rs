@@ -43,6 +43,8 @@ impl Nginx {
                         dockerfile: Some("nginx.Dockerfile".into()),
                         ..Default::default()
                     })),
+                    image: Some("nginx:wizard".into()),
+                    container_name: Some("nginx".into()),
                     ports: Ports::Short(vec!["80:80".into()]),
                     networks: Networks::Simple(vec!["fe_service".into()]),
                     restart: Some("always".into()),

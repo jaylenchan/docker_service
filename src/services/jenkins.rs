@@ -1,5 +1,5 @@
 use super::docker::{
-    AdvancedBuildStep, BuildStep, Copy, Dockerfile, DockerfileContent, Dockerservice,
+    AdvancedBuildStep, BuildStep, Dockerfile, DockerfileContent, Dockerservice,
     DockerserviceContent, Env, Expose, Label, Networks, Ports, Run, User,
 };
 
@@ -37,6 +37,8 @@ impl Jenkins {
                         dockerfile: Some("jenkins.Dockerfile".into()),
                         ..Default::default()
                     })),
+                    image:  Some("jenkins:wizard".into()),
+                    container_name: Some("jenkins".into()),
                     ports: Ports::Short(vec!["8080:8080".into()]),
                     networks: Networks::Simple(vec!["fe_service".into()]),
                     restart: Some("always".into()),

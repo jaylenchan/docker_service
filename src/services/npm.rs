@@ -21,12 +21,13 @@ impl Npm {
             docker_service: Dockerservice {
                 service_name: "npm".into(),
                 content: DockerserviceContent {
-                    container_name: Some("npm".into()),
                     build_: Some(BuildStep::Advanced(AdvancedBuildStep {
                         context: ".".into(),
                         dockerfile: Some("npm.Dockerfile".into()),
                         ..Default::default()
                     })),
+                    image: Some("npm:wizard".into()),
+                    container_name: Some("nginx:wizard".into()),
                     ports: Ports::Short(vec!["4873:4873".into()]),
                     volumes: Volumes::Simple(vec![
                         "/home/fe_service/storage:/verdaccio/storage".into(),
