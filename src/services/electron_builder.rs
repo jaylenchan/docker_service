@@ -1,5 +1,5 @@
 use super::docker::{
-    AdvancedBuildStep, BuildStep, Cmd, Dockerfile, DockerfileContent, Dockerservice,
+    AdvancedBuildStep, BuildStep, Cmd, Command, Dockerfile, DockerfileContent, Dockerservice,
     DockerserviceContent, Label, Networks, Run, User,
 };
 
@@ -22,7 +22,6 @@ impl ElectronBuilder {
                     .push(Run::new("ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone"))
                     .push(Run::new("npm install -g n yarn"))
                     .push(Run::new("n 16.17.1"))
-                    .push(Cmd::new(r#"/bin/bash -c "while true;do echo hello docker;sleep 1;done""#))
                     .finish()
                     .to_string(),
             },
@@ -38,6 +37,9 @@ impl ElectronBuilder {
                     container_name: Some("electron_builder".into()),
                     networks: Networks::Simple(vec!["fe_service".into()]),
                     restart: Some("always".into()),
+                    tty: true,
+                    stdin_open: true,
+                    command: Some(Command::Simple("sh".into())),
                     ..Default::default()
                 },
             },
